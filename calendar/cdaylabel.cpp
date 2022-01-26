@@ -1,5 +1,6 @@
 #include "cdaylabel.h"
 #include "ccalendar.h"
+#include "widget.h"
 #include <QVariant>
 
 int Day,Month,Year;
@@ -10,14 +11,14 @@ bool CDayLabel::GetSelect(){//获得是否被选中
 
 void CDayLabel::SetSelect(bool value){//设置是否被选中
     Select=value;
+    this->setStyleSheet(QString("background: #ffffff; border: 1px solid red; border-radius: 2px"));
 }
 
 void CDayLabel::SetColor(const int &type)//设置颜色
 {
     // 设置控件属性类型
+    this->setProperty("type", type);
     this->SetSelect(CURRENT_DAY == type);
-
-
 
     // 其他月
     if ((PREV_MONTH_DAY == type) || (NEXT_MONTH_DAY == type)) {

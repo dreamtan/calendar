@@ -7,11 +7,19 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QLabel>
+#include <QPainter>
+#include <QPixmap>
 #include "cdaylabel.h"
+#include "PainterLabel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
+
+
+
+
+
 
 static const QString s_strWeek[] = {
     QObject::tr("周日"), QObject::tr("周一"), QObject::tr("周二"),
@@ -30,6 +38,9 @@ public:
     void InitStyle();
     ~Widget();
 
+protected:
+//    void paintEvent(QPaintEvent *event);
+
 private:
     Ui::Widget *ui;
 
@@ -37,9 +48,14 @@ private:
     int GetTotalMonthDays(int year, int month);
     int GetMonthDays(int year, int month);
     bool IsLoopYaer(int year);
+//    void paintEvent(QPaintEvent *event);
+//    bool eventFilter(QObject *watched, QEvent *event);
+    void Paint();
 
     QVBoxLayout *VBoxlayout;
     QGridLayout *Gridlayout;
+    QHBoxLayout *LHBoxlayout;
+    QVBoxLayout *RVBoxlayout;
     QHBoxLayout *HBoxlayout;
     QPushButton *BtnPrevMonth;
     QPushButton *BtnNextMonth;
@@ -47,10 +63,13 @@ private:
     QLabel *LabelTitle;
     CDayLabel *DayLabel[42];
     QLabel *WeekLabel[7];
-//    QLabel *LabelShowToday;
-//    QLabel *LabelShowWeek;
-//    QLabel *LabelShowDay;
-//    QLabel *LabelShowYear;
+    QLabel *LabelShowToday;
+    QLabel *LabelShowWeek;
+    QPixmap PixmapShowDay;
+    QLabel *LabelShowDay;
+    QLabel *LabelShowYear;
+    QWidget *rdwidget;
+    PainterLabel painterLabel;
 
 signals:
     void SignalDayChanged();

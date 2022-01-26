@@ -3,6 +3,9 @@
 #include "cdaylabel.h"
 #include <QDate>
 #include <QString>
+#include <QPoint>
+#include <QPaintEvent>
+#include <QPixmap>
 #include "ccalendar.h"
 
 
@@ -10,18 +13,44 @@ Widget::Widget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Widget)
 {
+//    rdwidget = new QWidget();
     ui->setupUi(this);
+//    LabelShowDay->installEventFilter(this);
     Year=QDate::currentDate().year();
     Month=QDate::currentDate().month();
     Day=QDate::currentDate().day();
     InitWidget();
     InitStyle();
     InitDate();
-//    LabelShowDay = new QLabel();
-//    LabelShowWeek = new QLabel();
-//    LabelShowYear = new QLabel();
-//    LabelShowToday= new QLabel();
 }
+
+//bool Widget::eventFilter(QObject *watched, QEvent *event)   //用过滤器eventFilter（）拦截QLabel中的QEvent::Paint事件
+//{
+//    if(watched ==LabelShowDay && event->type() == QEvent::Paint)
+//        Paint();
+
+//    return QWidget::eventFilter(watched,event);
+//}
+
+//void Widget::paintEvent(QPaintEvent *event)
+//{
+//    Q_UNUSED(event);
+//    QPainter *painter;
+//    painter=new QPainter(&PixmapShowDay);
+////    painter->save();
+//    painter->setPen(QColor(0, 160, 230));
+
+//    painter->drawText(rect(),Qt::AlignCenter,/*QDate::currentDate().toString("dd")*/QStringLiteral("一二三里"));
+
+//    LabelShowDay->setPixmap(PixmapShowDay);
+//}
+
+//void Widget::paintEvent(QPaintEvent *event){
+//    Q_UNUSED(event);
+//    QPainter *painter= new QPainter(this);
+//    painter->setPen(QColor(0, 160, 230));
+//    painter->drawText(QRect(400,300,100,50),QDate::currentDate().toString("dd"));
+//}
 
 void Widget::InitWidget(){//初始化界面
     this->resize(430,350);
@@ -34,7 +63,7 @@ void Widget::InitWidget(){//初始化界面
     BtnPrevMonth =new QPushButton("上月",CalendarTitle);
     BtnNextMonth = new QPushButton("下月",CalendarTitle);
     LabelTitle = new QLabel(CalendarTitle);
-    HBoxlayout = new QHBoxLayout(CalendarTitle);
+    LHBoxlayout = new QHBoxLayout(CalendarTitle);
 
     Year= QDate::currentDate().year();
     Month=QDate::currentDate().month();
@@ -42,9 +71,9 @@ void Widget::InitWidget(){//初始化界面
 
     LabelTitle->setText(tr("%1 年 %2 月").arg(Year, 2, 10, QChar('0')).arg(Month, 2, 10, QChar('0')));
 
-    HBoxlayout->addWidget(BtnPrevMonth,1);
-    HBoxlayout->addWidget(LabelTitle,3);
-    HBoxlayout->addWidget(BtnNextMonth,1);
+    LHBoxlayout->addWidget(BtnPrevMonth,1);
+    LHBoxlayout->addWidget(LabelTitle,3);
+    LHBoxlayout->addWidget(BtnNextMonth,1);
 
     VBoxlayout->addWidget(CalendarTitle,1,Qt::AlignCenter);
 
@@ -75,7 +104,38 @@ void Widget::InitWidget(){//初始化界面
     }
 
     VBoxlayout->addLayout(Gridlayout,4);
-    this->setLayout(VBoxlayout);
+
+
+//    QPixmap PixmapShowDay;
+//    painterLabel = new QLabel();
+//    LabelShowDay = new QLabel();
+    LabelShowWeek = new QLabel();
+    LabelShowYear = new QLabel();
+    LabelShowToday= new QLabel();
+//    rdwidget = new QWidget();
+
+//    LabelShowDay->setAlignment(Qt::AlignCenter);
+    LabelShowWeek->setAlignment(Qt::AlignCenter);
+    LabelShowYear->setAlignment(Qt::AlignCenter);
+    LabelShowToday->setAlignment(Qt::AlignCenter);
+
+//    LabelShowDay->setText(QDate::currentDate().toString("dd"));
+//    QPaintEvent *e;
+//    this->paintEvent(e);
+    LabelShowWeek->setText(QDate::currentDate().toString("ddd"));
+    LabelShowToday->setText(QDateTime::currentDateTime().toString("yyyy 年 MM 月 dd日"));
+//    LabelShowDay->setPixmap(PixmapShowDay);
+//    painterLabel->setPixmap()
+
+    HBoxlayout =new QHBoxLayout();
+    RVBoxlayout =new QVBoxLayout();
+    RVBoxlayout->addWidget(LabelShowToday);
+    RVBoxlayout->addWidget(LabelShowWeek);
+    RVBoxlayout->addWidget(&painterLabel);
+//    RVBoxlayout->addWidget(LabelShowDay);
+    HBoxlayout->addLayout(VBoxlayout,3);
+    HBoxlayout->addLayout(RVBoxlayout,1);
+    this->setLayout(HBoxlayout);
 }
 
 void Widget::InitDate(){//初始日期
@@ -113,7 +173,6 @@ void Widget::InitDate(){//初始日期
 
     // 显示当前月
     int nProperty = 1;
-//    QStringList strPlan;
     int index = 0;
     for (int i = nWeek; i < (nMonthDays + nWeek); i++) {
         index = 0 == nWeek ? (i + 7) : i;
@@ -238,17 +297,17 @@ bool Widget::IsLoopYaer(int year)//是否闰年
 
 void Widget::InitStyle(){//初始化样式
     QString strStyle = "";
-    strStyle += QString(".CalendarWidget {border: 1px solid #ff00ff;}");
-    strStyle += QString(".Window {background: black;}");
+    strStyle += QString(".Ccalendar {border: 1px solid #ff00ff;}");
+    strStyle += QString(".Widget {background: white;}");
     strStyle += QString(".DayLabel{font: 24px; font-family: 隶书;}");
     strStyle += QString("QWidget#widgetCalendar{ background-color: white;}");
-    strStyle += QString("QWidget#widgetTitle{ background-color: #c8b9a6;}");
+    strStyle += QString("QWidget#CalendarTitle{ background-color: #c8b9a6;}");
     strStyle += QString("QWidget#widgetWeek{ background-color: #efefef;}");
-    strStyle += QString("QLabel#labelTitle {border: none; font: bold 18px;}");
-    strStyle += QString("QLabel#labelWeek {border-top: 1px solid #c3c3c3; border-left: 1px solid #c3c3c3; font: bold 12px;}");
-    strStyle += QString("QLabel#labelDay[weekend=true],QLabel#labelWeek[weekend=true]{color: red;}");
-    strStyle += QString("QLabel#labelDay {border-top: 1px solid #c3c3c3; border-left: 1px solid #c3c3c3; font-size: 14px;}");
-    strStyle += QString("QLabel#labelShowDay {color: yellow; font: bold 64px;}");
+    strStyle += QString("QLabel#LabelTitle {border: none; font: bold 18px;}");
+    strStyle += QString("QLabel#WeekLabel {border-top: 1px solid #c3c3c3; border-left: 1px solid #c3c3c3; font: bold 12px;}");
+    strStyle += QString("QLabel#DayLabel[weekend=true],QLabel#WeekLabel[weekend=true]{color: red;}");
+    strStyle += QString("QLabel#DayLabel {border-top: 1px solid #c3c3c3; border-left: 1px solid #c3c3c3; font-size: 14px;}");
+    strStyle += QString("QLabel#LabelShowDay {color: yellow; font: bold 64px;}");
     strStyle += QString("QLabel#labelCommon {color: #ffffff;}");
     strStyle += QString("QLabel#labelSchedule {color: #ffffff; border: 1px solid #ffffff;}");
     strStyle += QString("QLabel#labelSpacer {border: 1px solid #ffffff;}");
